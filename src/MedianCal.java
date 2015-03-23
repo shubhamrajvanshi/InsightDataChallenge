@@ -1,25 +1,26 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 import java.util.StringTokenizer;
-
 
 public class MedianCal {
 	
 	private File files [] = null ;
-	static File folder = new File("./wc_input");
+	
 
-	public void listFilesForFolder(File folder) {
-	        if (folder.isDirectory()) {
-        	files = folder.listFiles() ;
+	public void listFilesForFolder(String folder1) {
+		File folder = new File(folder1);
+		if (folder.isDirectory()) {
+	          	files = folder.listFiles() ;
+	          	Arrays.sort(files);
         } else {
             System.out.println("folder not found");
         }
@@ -56,40 +57,59 @@ public class MedianCal {
  * each sentence in each file.
  * 	
  */
-	public void readFile(File inputfiles[]) throws IOException{
+	public List readFile(File inputfiles[]) throws IOException{
+		double median ;
+		List list = new ArrayList();
+		List list1 = new ArrayList();
+		MedianCal cal= new MedianCal();
 		String line ="";
 		for (File inputfile :inputfiles)
 		{
 			FileReader infile = new FileReader(inputfile);
 			BufferedReader br = new BufferedReader(infile);
 				while((line=br.readLine()) != null){
-					System.out.println(line);
+					int count = cal.countWords(line);
+					list.add(count);
+			      
+					if(list.size()==1){
+						median =  ((Integer)list.get(0));
+						}
+					else 
+					   median = cal.CalculateMedian(list);	
+					System.out.println(median);
+					list1.add(median);
 				}
 		}
+				return list1;
+		
+		
 	}
 		
+	public void Medianresult(List list, String outfile) throws IOException{
+		
+		Iterator iterator = list.iterator();
+		File out_file = new File(outfile);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(out_file));
+		while(iterator.hasNext())
+		{
+			bw.write(iterator.next().toString());
+			bw.newLine();
+		}
+			bw.close();
+		
+	}
 	
+	/*
+	 * Main Method
+	 * 
+	 */
 	public static void main(String [] args) throws IOException{
 		String line ="";
 		double median ;
 		List list = new ArrayList();
-		//int[] numArray = new int[6];
-	
-	
 		MedianCal cal= new MedianCal();
-		cal.listFilesForFolder(cal.folder);
-		cal.readFile(cal.files);
-		
-		int count = cal.countWords(line);
-		System.out.println("Your sentence count is  : "+ count);
-
-		list.add(count);
-      
-		if(list.size()==1){
-			median =  ((Integer)list.get(0));
-			}else 
-		   median = cal.CalculateMedian(list);	
-			System.out.println("Median :" +median);
-		
+		cal.listFilesForFolder(args[0]);
+		List list1= cal.readFile(cal.files);
+		cal.Medianresult(list1,args[1]);
 	}
 }
