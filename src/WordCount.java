@@ -13,11 +13,12 @@ import java.util.TreeMap;
 
 public class WordCount {
 	private File files [] = null ;
-	static File folder = new File("./wc_input");
+	
 	private HashMap<String, Integer> wordcount = new HashMap<String, Integer>();
 	
-	public void listFilesForFolder(File folder) {
- 	        if (folder.isDirectory()) {
+	public void listFilesForFolder(String path) {
+		File folder = new File(path);
+		if (folder.isDirectory()) {
 	        	files = folder.listFiles() ;
 	        } else {
 	            System.out.println("folder not found");
@@ -54,11 +55,11 @@ public class WordCount {
 		    }
 	}
 	
-	public void wordcountresult() throws IOException{
+	public void wordcountresult(String outpath) throws IOException{
 		TreeMap<String,Integer> tm = new TreeMap<String, Integer>(wordcount);
 		Set  set = tm.entrySet();
 		Iterator iterator = set.iterator();
-		File out_file = new File("./wc_output/wc_result.txt");
+		File out_file = new File(outpath);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(out_file));
 		while(iterator.hasNext())
 		{
@@ -73,8 +74,8 @@ public class WordCount {
 	public static void main(String args[]) throws IOException
 	{
 		WordCount w = new WordCount();
-		w.listFilesForFolder(WordCount.folder);
+		w.listFilesForFolder(args[0]);
 		w.countwords(w.files);
-		w.wordcountresult();
+		w.wordcountresult(args[1]);
 	}
 }
